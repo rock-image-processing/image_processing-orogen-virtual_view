@@ -1,0 +1,10 @@
+<package>
+  <description brief="Combines multiple images from different positions and combine them in virtual view">
+  This package uses homography transforms to reproject camera images onto an image plane, which can be viewed from a different viewpoint, like for example the birds-eye perspective.
+  </description>
+  <author>Jakob Schwendner/jakob.schwendner@dfki.de</author>
+  <license>LGPL</license>
+  <depend package="base/cmake" />
+  <depend package="image_processing/projection" />
+  <depend package="drivers/orogen/transformer" />
+</package>
