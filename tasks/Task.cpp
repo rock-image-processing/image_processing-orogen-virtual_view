@@ -46,6 +46,19 @@ bool Task::configureHook()
 {
     if (! TaskBase::configureHook())
         return false;
+
+    Eigen::Affine3d vcam2plane;
+    if( _virtual_cam2plane.get( base::Time(), vcam2plane ) )
+    {
+	hom.init( _width.value(), _height.value(), _focal_length.value(), 
+		Eigen::Isometry3f( vcam2plane.matrix().cast<float>() ) );
+    }
+    else
+    {
+	LOG_ERROR_S << "Could not get vcam2plane transformation chain" << std::endl;
+	return false;
+    }
+
     return true;
 }
 bool Task::startHook()

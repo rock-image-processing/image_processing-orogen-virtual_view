@@ -5,6 +5,8 @@
 
 #include "virtual_view/TaskBase.hpp"
 
+#include <projection/Homography.hpp>
+
 namespace virtual_view {
 
     /*! \class Task 
@@ -25,6 +27,8 @@ namespace virtual_view {
     {
 	friend class TaskBase;
     protected:
+
+	projection::Homography hom;
 
         virtual void cam1TransformerCallback(const base::Time &ts, const ::RTT::extras::ReadOnlyPointer< ::base::samples::frame::Frame > &cam1_sample);
 
