@@ -29,6 +29,9 @@ namespace virtual_view {
     protected:
 
 	projection::Homography hom;
+	base::samples::frame::Frame viewFrame;
+
+	void addCam( const base::Affine3d& cam2body, const ::RTT::extras::ReadOnlyPointer< ::base::samples::frame::Frame >& frame ); 
 
         virtual void cam1TransformerCallback(const base::Time &ts, const ::RTT::extras::ReadOnlyPointer< ::base::samples::frame::Frame > &cam1_sample);
 

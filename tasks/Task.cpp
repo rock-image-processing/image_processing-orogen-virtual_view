@@ -1,6 +1,8 @@
 /* Generated from orogen/lib/orogen/templates/tasks/Task.cpp */
 
 #include "Task.hpp"
+#include <frame_helper/Calibration.h>
+#include <frame_helper/FrameHelper.h>
 
 using namespace virtual_view;
 
@@ -18,24 +20,57 @@ Task::~Task()
 {
 }
 
+
+void Task::addCam( const base::Affine3d& cam2plane, const ::RTT::extras::ReadOnlyPointer< ::base::samples::frame::Frame >& frame )
+{
+    // get calibration matrix
+    frame_helper::CameraCalibration calib = 
+	frame_helper::CameraCalibration::fromFrame( *frame );
+
+    if( !calib.isValid() )
+	throw std::runtime_error("No valid calibration matrix embedded in frame");
+
+    Eigen::Matrix3f camMatrix = 
+	calib.getCameraMatrix();
+
+    // get cv image
+    cv::Mat img = frame_helper::FrameHelper::convertToCvMat( *frame );
+
+    // project image in homography
+    hom.addImage( img, Eigen::Isometry3f( cam2plane.matrix().cast<float>() ), camMatrix );
+}
+
 void Task::cam1TransformerCallback(const base::Time &ts, const ::RTT::extras::ReadOnlyPointer< ::base::samples::frame::Frame > &cam1_sample)
 {
-    throw std::runtime_error("Transformer callback for cam1 not implemented");
+    Eigen::Affine3d cam2plane;
+    if( _cam12plane.get( base::Time(), cam2plane ) )
+	addCam( cam2plane, cam1_sample );
+
+    // TODO for now, sync on cam1, but do something smarter later
+    frame_helper::FrameHelper::copyMatToFrame( hom.getVirtualImage(), viewFrame );
+    _virtual_cam.write( &viewFrame );
+    hom.clearVirtualImage();
 }
 
 void Task::cam2TransformerCallback(const base::Time &ts, const ::RTT::extras::ReadOnlyPointer< ::base::samples::frame::Frame > &cam2_sample)
 {
-    throw std::runtime_error("Transformer callback for cam2 not implemented");
+    Eigen::Affine3d cam2plane;
+    if( _cam12plane.get( base::Time(), cam2plane ) )
+	addCam( cam2plane, cam2_sample );
 }
 
 void Task::cam3TransformerCallback(const base::Time &ts, const ::RTT::extras::ReadOnlyPointer< ::base::samples::frame::Frame > &cam3_sample)
 {
-    throw std::runtime_error("Transformer callback for cam3 not implemented");
+    Eigen::Affine3d cam2plane;
+    if( _cam12plane.get( base::Time(), cam2plane ) )
+	addCam( cam2plane, cam3_sample );
 }
 
 void Task::cam4TransformerCallback(const base::Time &ts, const ::RTT::extras::ReadOnlyPointer< ::base::samples::frame::Frame > &cam4_sample)
 {
-    throw std::runtime_error("Transformer callback for cam4 not implemented");
+    Eigen::Affine3d cam2plane;
+    if( _cam12plane.get( base::Time(), cam2plane ) )
+	addCam( cam2plane, cam4_sample );
 }
 
 /// The following lines are template definitions for the various state machine
