@@ -31,7 +31,7 @@ void Task::addCam( const base::Affine3d& cam2plane, const ::RTT::extras::ReadOnl
 	throw std::runtime_error("No valid calibration matrix embedded in frame");
 
     Eigen::Matrix3f camMatrix = 
-	calib.getCameraMatrix();
+	calib.getCameraMatrix().cast<float>();
 
     // get cv image
     cv::Mat img = frame_helper::FrameHelper::convertToCvMat( *frame );
